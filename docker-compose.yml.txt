@@ -1,0 +1,79 @@
+version: '3'
+
+
+
+services:
+
+  mysql:
+
+    image: mysql:latest
+
+    environment:
+
+      MYSQL_ROOT_PASSWORD: '' # You can leave this empty string if you set MYSQL_ALLOW_EMPTY_PASSWORD to 'yes'
+
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes' # This allows you to use MySQL without a root password
+
+      MYSQL_DATABASE: hotel_management_system
+
+    ports:
+
+      
+"3306:3306"
+
+    command: --default-authentication-plugin=mysql_native_password
+
+
+
+  spring-boot-app:
+
+    image: openjdk:11
+
+    command: sh -c 'cd /app && ./mvnw spring-boot:run'
+
+    volumes:
+
+      
+./hotel-management-system-backend-master:/app
+
+      
+uploads:/app/image # Adjust this path based on where your application expects to find images
+
+    ports:
+
+      
+"8080:8080"
+
+    depends_on:
+
+      
+mysql
+
+
+
+  react-app:
+
+    image: node:14
+
+    command: sh -c 'cd /app && BROWSER=none npm start'
+
+    volumes:
+
+      
+./hotel-management-system-frontend-master:/app
+
+    ports:
+
+      
+"3000:3000"
+
+    depends_on:
+
+      
+spring-boot-app
+
+
+
+volumes:
+
+  uploads:
